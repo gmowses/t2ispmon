@@ -1,0 +1,174 @@
+version: '3'
+services:
+
+  t2mysql:
+    container_name: t2isp-mysql
+    image: 'mysql:8'
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: '@mysql@t2web#123'
+    volumes:
+      - /opt/docker/data/mysql:/var/lib/mysql
+    networks:
+      t2web-isp:
+        ipv4_address: 172.20.0.2
+
+
+  t2zbxserver:
+    container_name: t2isp-zbxserver
+    image: 'zabbix/zabbix-server-mysql:ubuntu-latest'
+    restart: always
+    environment:
+      DB_SERVER_HOST: "t2isp-mysql"
+      MYSQL_DATABASE: "zabbix"
+      MYSQL_USER: "zabbix"
+      MYSQL_PASSWORD: "zabbixT2webAdmin"
+      MYSQL_ROOT_PASSWORD: "@mysql@t2web#123"
+      ZBX_STARTPOLLERS: 100
+      ZBX_STARTPINGERS: 110
+      ZBX_STARTPOLLERSUNREACHABLE: 20
+      ZBX_CACHESIZE: 2G
+      ZBX_VALUECACHESIZE: 1G
+      ZBX_TRENDCACHESIZE: 512M
+      ZBX_HISTORYCACHESIZE: 256M
+      ZBX_HISTORYINDEXCACHESIZE: 128M
+      ZBX_VMWARECACHESIZE: 128M
+      ZBX_TIMEOUT: 30
+      ZBX_MAXHOUSEKEEPERDELETE: 30000
+      ZBX_SERVER_NAME: "ZBX-T2_ISP"
+      ZBX_TRAPPERIMEOUT: 300
+      ZBX_ENABLE_SNMP_TRAPS: true
+    depends_on:
+      - t2mysql
+    volumes:
+      - /opt/docker/data/zabbix/server/alertscripts:/usr/lib/zabbix/alertscripts 
+      - /opt/docker/data/zabbix/server/externalscripts:/usr/lib/zabbix/externalscripts 
+    networks:
+      t2web-isp:
+        ipv4_address: 172.20.0.3
+
+
+  t2zbxfront:
+    container_name: t2isp-zbxfront
+    image: 'zabbix/zabbix-web-apache-mysql:ubuntu-latest'
+    restart: always
+    environment:
+      DB_SERVER_HOST: "t2isp-mysql"
+      MYSQL_DATABASE: "zabbix"
+      MYSQL_USER: "zabbix"
+      MYSQL_PASSWORD: "zabbixT2webAdmin"
+      MYSQL_ROOT_PASSWORD: "@mysql@t2web#123"
+      PHP_TZ: "America/Sao_Paulo"
+      ZBX_UPLOADMAXFILESIZE: 50M
+      ZBX_SERVER_NAME: "ZBX-T2WEB_ISP"
+      VIRTUAL_HOST: "zbxisp.t2web.com.br"
+      ZBX_SERVER_HOST: "172.20.0.3"
+    depends_on:
+      - t2mysql
+    networks:
+      t2web-isp:
+        ipv4_address: 172.20.0.4
+
+
+  t2grafana:
+    container_name: t2isp-grafana
+    image: 'grafana/grafana:9.2.5-ubuntu'
+    restart: always
+    environment:
+      GF_INSTALL_PLUGINS: "alexanderzobnin-zabbix-app,grafana-singlestat-panel,yesoreyeram-boomtheme-panel,grafana-clock-panel,grafana-piechart-panel"
+    user: '0'
+    volumes:
+      - /opt/docker/data/grafana:/var/lib/grafana
+    networks:
+      t2web-isp:
+        ipv4_address: 172.20.0.5
+
+
+  t2dns:
+    container_name: t2isp-bind9
+    image: 'labbsr0x/dns-bind9'
+    restart: always
+    expose:
+      - '53'
+    ports:
+    - "53:53/udp"
+    - "53:53/tcp"
+    volumes:
+      -  /opt/docker/data/bind9/data:/data
+    networks:
+      t2web-isp:
+        ipv4_address: 172.20.0.6
+
+
+  t2ipam:
+    container_name: t2isp-ipam
+    image: 'phpipam/phpipam-www:latest'
+    restart: always
+    environment:
+      TZ: "America/Sao_Paulo"
+      IPAM_DATABASE_HOST: "172.20.0.2"
+      IPAM_DATABASE_USER: "ipam"
+      IPAM_DATABASE_PASS: "ipamT2webAdmin"
+      IPAM_DATABASE_NAME: "phpipam"
+    depends_on:
+      - t2mysql
+    volumes:
+      - /opt/docker/data/bind9/data:/data
+    networks:
+      t2web-isp:
+        ipv4_address: 172.20.0.7
+
+
+  t2proxymanager:
+    container_name: t2isp-proxymanager
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: always
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /opt/docker/data/nginxproxymanager/data:/data
+      - /opt/docker/data/nginxproxymanager/letsencrypt:/etc/letsencrypt
+    networks:
+      t2web-isp:
+        ipv4_address: 172.20.0.8
+
+
+  t2portainer:
+    container_name: t2isp-portainer
+    image: 'portainer/portainer-ce:latest'
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/docker/data/portainer:/data
+    networks:
+      t2web-isp:
+        ipv4_address: 172.20.0.9
+
+
+  t2isp-syslog:
+    container_name: t2isp-syslog
+    image: pbertera/syslogserver
+    restart: always
+    environment:
+      - SYSLOG_USERNAME="t2web"
+      - SYSLOG_PASSWORD="@T2#web#r00t@"
+    ports:
+    - "514:514/udp"
+    volumes:
+      -  /opt/docker/data/bind9/data:/data
+    networks:
+      t2web-isp:
+        ipv4_address: 172.20.0.10
+
+
+networks:
+  t2web-isp:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1
