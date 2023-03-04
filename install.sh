@@ -20,27 +20,29 @@ echo instalando Docker
 sudo apt-get install docker-ce docker-ce-cli containerd.io -y
 
 # 7. Criar pasta de trabalho
-mkdir t2web
+sudo mkdir t2web
 cd t2web
 
 # 8. Baixar o repositorio
-git clone https://github.com/gmowses/t2ispmon.git .
+sudo git clone https://github.com/gmowses/t2ispmon.git .
 
 # 9. Executa o stack 
 echo executando o Stack de Containers
 sudo docker compose up -d
 
 # 10. Configurar o arquivo do DNS recursivo
-read -p "Digite o bloco IPV4 do Cliente. (Ex: 10.0.0.0/22) " endereco_novo && sudo sed -i "/181.191.104.0\/22;/a \        $endereco_novo;" bind9/data/bind/etc/named.conf.options
+read -p "Digite o bloco IPV4 do Cliente. (Ex: 10.0.0.0/22) " endereco_novo && sudo sed -i "/        181.191.104.0\/22;/a \        $endereco_novo;" assets/named.conf.options
 
 
 #11. Padronizar acesso e config base
 #DNS
-mv -f bind9/ /opt/docker/data/
+sudo mv -f assets/named.conf.options /opt/docker/data/bind9/data/bind/etc/
 #NGINX
-mv -f nginxproxymanager/ /opt/docker/data/ 
+sudo mv -f assets/database.sqlite /opt/docker/data/nginxproxymanager/data/
+#GRAFANA
+sudo mv -f assets/grafana.db /opt/docker/data/grafana/
 #ZABBIX
-sudo mysql -h 172.20.0.2 -u root -p@mysql@t2web#123 zabbix < zabbix.sql
+sudo mysql -h 172.20.0.2 -u root -p@mysql@t2web#123 zabbix < assets/zabbix.sql
 
 #12. FINAL
 echo ------------------------------------------
