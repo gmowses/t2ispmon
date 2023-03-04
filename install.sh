@@ -42,7 +42,7 @@ sudo mv -f assets/database.sqlite /opt/docker/data/nginxproxymanager/data/
 #GRAFANA
 sudo mv -f assets/grafana.db /opt/docker/data/grafana/
 #ZABBIX
-sudo mysql -h 172.20.0.2 -u root -p@mysql@t2web#123 zabbix < assets/zabbix.sql
+mysql -h 172.20.0.2 -u root -p@mysql@t2web#123 zabbix < assets/zabbix.sql
 
 #12. FINAL
 echo ------------------------------------------
