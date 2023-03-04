@@ -39,3 +39,12 @@ read -p "Digite o bloco IPV4 do Cliente. (Ex: 10.0.0.0/22) " endereco_novo && su
 mv -f bind9/ /opt/docker/data/
 #NGINX
 mv -f nginxproxymanager/ /opt/docker/data/ 
+#ZABBIX
+sudo mysql -h 172.20.0.2 -u root -p@mysql@t2web#123 zabbix < zabbix.sql
+
+#12. FINAL
+echo ------------------------------------------
+echo
+echo INSTALAÇÃO FINALIZADA
+echo PORFAVOR REALIZE OS TESTE DE LOGIN NAS PLATAFORMAS
+echo E ADCIONE O DOCKER AGENT NO DOCKER CENTRAL DA T2WEB.
