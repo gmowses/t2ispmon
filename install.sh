@@ -28,11 +28,14 @@ git clone https://github.com/gmowses/t2ispmon.git .
 
 # 9. Executa o stack 
 echo executando o Stack de Containers
-docker compose up -d
+sudo docker compose up -d
 
 # 10. Configurar o arquivo do DNS recursivo
 read -p "Digite o bloco IPV4 do Cliente. (Ex: 10.0.0.0/22) " endereco_novo && sudo sed -i "/181.191.104.0\/22;/a \        $endereco_novo;" bind9/data/bind/etc/named.conf.options
-mv -f bind9/ /opt/docker/data/ 
 
 
-#11. Padroniza acessos zabbix e grafana
+#11. Padronizar acesso e config base
+#DNS
+mv -f bind9/ /opt/docker/data/
+#NGINX
+mv -f nginxproxymanager/ /opt/docker/data/ 
