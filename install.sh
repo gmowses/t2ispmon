@@ -4,7 +4,7 @@ sudo apt-get update -y
 
 # 2. Instale as dependências necessárias
 echo instalando as dependencias nescessarias
-sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common pv mariadb-client wget git -y 
+sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common pv mariadb-client wget git fail2ban -y 
 
 # 3. Adicione a chave GPG oficial do Docker
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
