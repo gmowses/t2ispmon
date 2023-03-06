@@ -21,7 +21,7 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io -y
 
 #Fail 2 ban e SSH
 sudo sed -i 's/findtime  = 1/findtime  = 10m/g; s/maxretry = 1/maxretry = 3/g' /etc/fail2ban/jail.conf
-sudo sed -i '/^\[sshd\]/,/^\[/ s/^port\s*=.*/port = ssh,65022/' /etc/fail2ban/jail.conf
+sudo sed -i -e '/^\[DEFAULT\]/,/^\[/ s/^bantime\s*=.*/bantime = 1h/' -e '/^\[DEFAULT\]/,/^\[/ s/^findtime\s*=.*/findtime = 30/' /etc/fail2ban/jail.conf
 sudo sed -i 's/#Port 22/Port 65022/; s/LoginGraceTime 2m/LoginGraceTime 20/' /etc/ssh/sshd_config
 
 
