@@ -20,11 +20,11 @@ echo instalando Docker
 sudo apt-get install docker-ce docker-ce-cli containerd.io -y
 
 #Fail 2 ban e SSH
-sudo sed -i 's/bantime  = 10m/bantime  = 20m/g; s/findtime  = 10m/findtime  = 20m/g; s/maxretry = 5/maxretry = 3/g' /etc/fail2ban/jail.conf
+sudo sed -i 's/findtime  = 1/findtime  = 10m/g; s/maxretry = 1/maxretry = 3/g' /etc/fail2ban/jail.conf
+sudo sed -i '/^\[sshd\]/,/^\[/ s/^port\s*=.*/port = ssh,65022/' /etc/fail2ban/jail.conf
+sudo sed -i 's/#Port 22/Port 65022/; s/LoginGraceTime 2m/LoginGraceTime 20/' /etc/ssh/sshd_config
 
-sudo sed -i 's/^Port .*/Port 65022/; s/^LoginGraceTime .*/LoginGraceTime 10/' /etc/ssh/sshd_config
 
-sudo sed -i '/^\[sshd\]/ {n;s/.*/&,\ \65022/}' /etc/fail2ban/jail.conf
 
 
 # 7. Criar pasta de trabalho
