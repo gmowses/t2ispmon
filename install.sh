@@ -51,7 +51,8 @@ sudo docker compose up -d
 # 10. Configurar o arquivo do DNS recursivo
 
 #11. Padronizar acesso e config base
-
+sleep 20
+echo "Aguarde..."
 #ZABBIX
 mysql -h 172.20.0.2 -u root -p@mysql@t2web#123 zabbix < assets/zabbix.sql
 
