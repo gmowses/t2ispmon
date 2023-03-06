@@ -29,20 +29,12 @@ sudo sed -i 's/#Port 22/Port 65022/; s/#LoginGraceTime 2m/LoginGraceTime 20/' /e
 
 # 7. Criar pasta de trabalho
 sudo mkdir t2web
-sudo mkdir -p /opt/docker/data/bind9/data/bind/etc/
-sudo mkdir -p /opt/docker/data/nginxproxymanager/data/
-sudo mkdir -p /opt/docker/data/grafana/
 cd t2web
 #DNS
 
 # 8. Baixar o repositorio
 sudo git clone https://github.com/gmowses/t2ispmon.git .
 read -p "Digite o bloco IPV4 do Cliente. (Ex: 10.0.0.0/22) " endereco_novo && sudo sed -i "/        181.191.104.0\/22;/a \        $endereco_novo;" assets/named.conf.options
-sudo mv -f assets/named.conf.options /opt/docker/data/bind9/data/bind/etc/
-#NGINX
-sudo mv -f assets/database.sqlite /opt/docker/data/nginxproxymanager/data/
-#GRAFANA
-sudo mv -f assets/grafana.db /opt/docker/data/grafana/
 # 9. Executa o stack 
 echo executando o Stack de Containers
 
@@ -53,6 +45,12 @@ sudo docker compose up -d
 #11. Padronizar acesso e config base
 sleep 20
 echo "Aguarde..."
+#BIND9
+sudo mv -f assets/named.conf.options /opt/docker/data/bind9/data/bind/etc/
+#NGINX
+sudo mv -f assets/database.sqlite /opt/docker/data/nginxproxymanager/data/
+#GRAFANA
+sudo mv -f assets/grafana.db /opt/docker/data/grafana/
 #ZABBIX
 mysql -h 172.20.0.2 -u root -p@mysql@t2web#123 zabbix < assets/zabbix.sql
 
