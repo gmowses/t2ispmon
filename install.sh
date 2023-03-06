@@ -19,6 +19,14 @@ sudo apt-get update -y
 echo instalando Docker
 sudo apt-get install docker-ce docker-ce-cli containerd.io -y
 
+#Fail 2 ban e SSH
+sudo sed -i 's/bantime  = 10m/bantime  = 20m/g; s/findtime  = 10m/findtime  = 20m/g; s/maxretry = 5/maxretry = 3/g' /etc/fail2ban/jail.conf
+
+sudo sed -i 's/^Port .*/Port 65022/; s/^LoginGraceTime .*/LoginGraceTime 10/' /etc/ssh/sshd_config
+
+sudo sed -i '/^\[sshd\]/ {n;s/.*/&,\ \65022/}' /etc/fail2ban/jail.conf
+
+
 # 7. Criar pasta de trabalho
 sudo mkdir t2web
 cd t2web
