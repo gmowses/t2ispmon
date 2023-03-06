@@ -43,8 +43,8 @@ sudo docker compose up -d
 # 10. Configurar o arquivo do DNS recursivo
 
 #11. Padronizar acesso e config base
-sleep 240
 echo "Aguarde..."
+sleep 240
 #BIND9
 sudo mv -f assets/named.conf.options /opt/docker/data/bind9/data/bind/etc/
 #NGINX
