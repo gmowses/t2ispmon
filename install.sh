@@ -29,20 +29,23 @@ sudo sed -i '/^\[sshd\]/ {n;s/.*/&,\ \65022/}' /etc/fail2ban/jail.conf
 
 # 7. Criar pasta de trabalho
 sudo mkdir t2web
+sudo mkdir -p /opt/docker/data/bind9/data/bind/etc/
+sudo mkdir -p /opt/docker/data/nginxproxymanager/data/
+sudo mkdir -p /opt/docker/data/grafana/
 cd t2web
+#DNS
 
 # 8. Baixar o repositorio
 sudo git clone https://github.com/gmowses/t2ispmon.git .
-
-# 9. Executa o stack 
-echo executando o Stack de Containers
-#DNS
 read -p "Digite o bloco IPV4 do Cliente. (Ex: 10.0.0.0/22) " endereco_novo && sudo sed -i "/        181.191.104.0\/22;/a \        $endereco_novo;" assets/named.conf.options
 sudo mv -f assets/named.conf.options /opt/docker/data/bind9/data/bind/etc/
 #NGINX
 sudo mv -f assets/database.sqlite /opt/docker/data/nginxproxymanager/data/
 #GRAFANA
 sudo mv -f assets/grafana.db /opt/docker/data/grafana/
+# 9. Executa o stack 
+echo executando o Stack de Containers
+
 sudo docker compose up -d
 
 # 10. Configurar o arquivo do DNS recursivo
