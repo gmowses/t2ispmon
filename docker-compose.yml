@@ -6,8 +6,9 @@ services:
     image: 'mysql:8'
     restart: unless-stopped
     environment:
-      MYSQL_USER: npm_user
-      MYSQL_PASSWORD: 3MxIN6urFaBP
+      MYSQL_DATABASE: nginxproxymanager
+      MYSQL_USER: npmuser
+      MYSQL_PASSWORD: npmuserpassword
       MYSQL_ROOT_PASSWORD: '@mysql@t2web#123'
     volumes:
       - /opt/docker/data/mysql:/var/lib/mysql
@@ -107,12 +108,12 @@ services:
     image: 'jc21/nginx-proxy-manager:latest'
     restart: unless-stopped
     environment:
-      DB_MYSQL_HOST: 172.20.0.2
-      DB_MYSQL_PORT: 3306
-      DB_MYSQL_USER: npm_user
-      DB_MYSQL_PASSWORD: 3MxIN6urFaBP
-      DB_MYSQL_NAME: nginxproxymanager
-      DB_SETUP: 'true'
+      DB_TYPE: mysql
+      DB_HOST: 172.20.0.2
+      DB_PORT: 3306
+      DB_USER: npmuser
+      DB_PASSWORD: npmuserpassword
+      DB_NAME: nginxproxymanager
     ports:
       - "80:80"
       - "81:81"
