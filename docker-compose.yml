@@ -5,6 +5,7 @@ services:
     container_name: t2isp-mysql
     image: 'mysql:8'
     restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_DATABASE: npm
       MYSQL_USER: npmuser
