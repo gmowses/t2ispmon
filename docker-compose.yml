@@ -4,7 +4,7 @@ services:
   t2mysql:
     container_name: t2isp-mysql
     image: 'mysql:8'
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: '@mysql@t2web#123'
     volumes:
@@ -17,7 +17,7 @@ services:
   t2zbxserver:
     container_name: t2isp-zbxserver
     image: 'zabbix/zabbix-server-mysql:ubuntu-latest'
-    restart: always
+    restart: unless-stopped
     environment:
       DB_SERVER_HOST: "t2isp-mysql"
       MYSQL_DATABASE: "zabbix"
@@ -51,7 +51,7 @@ services:
   t2zbxfront:
     container_name: t2isp-zbxfront
     image: 'zabbix/zabbix-web-apache-mysql:ubuntu-latest'
-    restart: always
+    restart: unless-stopped
     environment:
       DB_SERVER_HOST: "t2isp-mysql"
       MYSQL_DATABASE: "zabbix"
@@ -73,7 +73,7 @@ services:
   t2grafana:
     container_name: t2isp-grafana
     image: 'grafana/grafana:9.2.5-ubuntu'
-    restart: always
+    restart: unless-stopped
     environment:
       GF_INSTALL_PLUGINS: "alexanderzobnin-zabbix-app,grafana-singlestat-panel,yesoreyeram-boomtheme-panel,grafana-clock-panel,grafana-piechart-panel"
     user: '0'
@@ -87,7 +87,7 @@ services:
   t2dns:
     container_name: t2isp-bind9
     image: 'labbsr0x/dns-bind9'
-    restart: always
+    restart: unless-stopped
     expose:
       - '53'
     ports:
@@ -103,12 +103,18 @@ services:
   t2proxymanager:
     container_name: t2isp-proxymanager
     image: 'jc21/nginx-proxy-manager:latest'
-    restart: always
+    restart: unless-stopped
+    environment:
+      DB_MYSQL_HOST: 172.20.0.2
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: root
+      DB_MYSQL_PASSWORD: @mysql@t2web#123
+      DB_MYSQL_NAME: nginxproxymanager
+      DB_SETUP: 'true'
     ports:
       - "80:80"
       - "81:81"
       - "443:443"
-      - "8080:8080"
     volumes:
       - /opt/docker/data/nginxproxymanager/data:/data
       - /opt/docker/data/nginxproxymanager/letsencrypt:/etc/letsencrypt
@@ -120,7 +126,7 @@ services:
   portainer_agent:
     image: portainer/agent:2.16.2
     container_name: portainer_agent
-    restart: always
+    restart: unless-stopped
     ports:
       - "9001:9001"
     volumes:
@@ -134,7 +140,7 @@ services:
   t2isp-syslog:
     container_name: t2isp-syslog
     image: pbertera/syslogserver
-    restart: always
+    restart: unless-stopped
     environment:
       - SYSLOG_USERNAME="t2web"
       - SYSLOG_PASSWORD="@T2#web#r00t@"
