@@ -20,7 +20,7 @@ services:
 
   t2zbxserver:
     container_name: t2isp-zbxserver
-    image: 'zabbix/zabbix-server-mysql:ubuntu-latest'
+    image: 'zabbix/zabbix-server-mysql:ubuntu-6.0-latest'
     restart: unless-stopped
     environment:
       DB_SERVER_HOST: "t2isp-mysql"
@@ -54,7 +54,7 @@ services:
 
   t2zbxfront:
     container_name: t2isp-zbxfront
-    image: 'zabbix/zabbix-web-apache-mysql:ubuntu-latest'
+    image: 'zabbix/zabbix-web-apache-mysql:ubuntu-6.0-latest'
     restart: unless-stopped
     environment:
       DB_SERVER_HOST: "t2isp-mysql"
