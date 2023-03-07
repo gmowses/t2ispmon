@@ -108,7 +108,7 @@ services:
       DB_MYSQL_HOST: 172.20.0.2
       DB_MYSQL_PORT: 3306
       DB_MYSQL_USER: root
-      DB_MYSQL_PASSWORD: @mysql@t2web#123
+      DB_MYSQL_PASSWORD: '@mysql@t2web#123'
       DB_MYSQL_NAME: nginxproxymanager
       DB_SETUP: 'true'
     ports:
