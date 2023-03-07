@@ -44,7 +44,7 @@ sudo docker compose up -d
 
 #11. Padronizar acesso e config base
 echo "Aguarde..."
-sleep 240
+sleep 600
 #BIND9
 sudo mv -f assets/named.conf.options /opt/docker/data/bind9/data/bind/etc/
 #NGINX
