@@ -51,8 +51,9 @@ sudo mv -f assets/named.conf.options /opt/docker/data/bind9/data/bind/etc/
 sudo mv -f assets/database.sqlite /opt/docker/data/nginxproxymanager/data/
 #GRAFANA
 sudo mv -f assets/grafana.db /opt/docker/data/grafana/
-#ZABBIX
+#MYSQL ZABBIX
 mysql -h 172.20.0.2 -u root -p@mysql@t2web#123 zabbix < assets/zabbix.sql
+sudo docker exec -it t2isp-zbxserver sh -c 'apt-get update -y && apt-get install -y jq mtr'
 
 #12. FINAL
 echo ------------------------------------------
