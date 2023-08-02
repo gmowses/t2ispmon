@@ -76,7 +76,7 @@ services:
 
   t2grafana:
     container_name: t2isp-grafana
-    image: 'grafana/grafana:9.2.5-ubuntu'
+    image: 'grafana/grafana:10.0.0-ubuntu'
     restart: unless-stopped
     environment:
       GF_INSTALL_PLUGINS: "alexanderzobnin-zabbix-app,grafana-singlestat-panel,yesoreyeram-boomtheme-panel,grafana-clock-panel,grafana-piechart-panel"
