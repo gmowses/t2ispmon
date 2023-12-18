@@ -40,24 +40,12 @@ echo executando o Stack de Containers
 
 sudo docker compose up -d
 
-# 10. Configurar o arquivo do DNS recursivo
-
-#11. Padronizar acesso e config base
-echo "Aguarde..."
-sleep 600
-#BIND9
-sudo mv -f assets/named.conf.options /opt/docker/data/bind9/data/bind/etc/
-#NGINX
-sudo mv -f assets/database.sqlite /opt/docker/data/nginxproxymanager/data/
-#GRAFANA
-sudo mv -f assets/grafana.db /opt/docker/data/grafana/
-#MYSQL ZABBIX
-mysql -h 172.20.0.2 -u root -p@mysql@t2web#123 zabbix < assets/zabbix.sql
-sudo docker exec -it t2isp-zbxserver sh -c 'apt-get update -y && apt-get install -y jq mtr'
-
 #12. FINAL
 echo ------------------------------------------
 echo
 echo INSTALAÇÃO FINALIZADA
 echo PORFAVOR REALIZE OS TESTE DE LOGIN NAS PLATAFORMAS
 echo E ADCIONE O DOCKER AGENT NO DOCKER CENTRAL DA T2WEB.
+
+sleep 10
+sudo reboot now
