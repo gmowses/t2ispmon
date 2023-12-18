@@ -203,7 +203,7 @@ services:
     ports:
       - 49:4949
     volumes:
-      - /opt/docker/data/tacacs/:/etc/tac_plus/tac_plus.cfg
+      - /opt/docker/data/tacacs/:/etc/tac_plus/
     networks:
       t2web-isp:
         ipv4_address: 10.20.30.13
