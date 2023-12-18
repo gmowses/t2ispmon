@@ -52,7 +52,10 @@ echo "File $daemon_json_path created with the specified content."
 sudo git clone https://github.com/gmowses/t2ispmon.git .
 # 9. Executa o stack 
 echo executando o Stack de Containers
-
+sudo mkdir -p /opt/docker/data/tacacs/
+sudo mkdir -p /opt/docker/data/promtail/config/
+sudo mv assets/tac_plus.cfg /opt/docker/data/tacacs/
+sudo mv assets/promtail-config.yaml /opt/docker/data/promtail/config/
 sudo docker compose up -d
 
 #12. FINAL
