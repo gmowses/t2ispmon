@@ -28,13 +28,28 @@ sudo sed -i 's/#Port 22/Port 65022/; s/#LoginGraceTime 2m/LoginGraceTime 20/' /e
 
 
 # 7. Criar pasta de trabalho
-sudo mkdir t2web
-cd t2web
-#DNS
+
+# Define the file path
+daemon_json_path="/etc/docker/daemon.json"
+
+# Create the content
+daemon_json_content='{
+    "bridge": "none"
+}'
+
+# Check if the directory exists, if not create it
+if [ ! -d "$(dirname $daemon_json_path)" ]; then
+    sudo mkdir -p "$(dirname $daemon_json_path)"
+fi
+
+# Write content to the file
+echo "$daemon_json_content" | sudo tee "$daemon_json_path" > /dev/null
+
+# Display success message
+echo "File $daemon_json_path created with the specified content."
 
 # 8. Baixar o repositorio
 sudo git clone https://github.com/gmowses/t2ispmon.git .
-read -p "Digite o bloco IPV4 do Cliente. (Ex: 10.0.0.0/22) " endereco_novo && sudo sed -i "/        181.191.104.0\/22;/a \        $endereco_novo;" assets/named.conf.options
 # 9. Executa o stack 
 echo executando o Stack de Containers
 

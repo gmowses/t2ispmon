@@ -8,8 +8,8 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_DATABASE: npm
-      MYSQL_USER: npmuser
-      MYSQL_PASSWORD: npmuserpassword
+      MYSQL_USER: npm
+      MYSQL_PASSWORD: '@npm@t2web#123'
       MYSQL_ROOT_PASSWORD: '@mysql@t2web#123'
     volumes:
       - /opt/docker/data/mysql:/var/lib/mysql
@@ -111,8 +111,8 @@ services:
     environment:
       DB_MYSQL_HOST: 10.20.30.2
       DB_MYSQL_PORT: 3306
-      DB_MYSQL_USER: "npmuser"
-      DB_MYSQL_PASSWORD: "npmuserpassword"
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "@npm@t2web#123"
       DB_MYSQL_NAME: "npm"
     ports:
       - "80:80"
@@ -129,8 +129,6 @@ services:
     image: portainer/portainer-ce:latest
     container_name: t2isp-portainer
     restart: unless-stopped
-    ports:
-      - "9001:9001"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/docker/data/portainer/data:/data
@@ -151,6 +149,7 @@ services:
     image: grafana/promtail:2.9.0
     volumes:
       - /var/log:/var/log
+      - /opt/docker/data/promtail/config:/mnt/config
     command: -config.file=/etc/promtail/config.yml
     networks:
       t2web-isp:
@@ -182,6 +181,53 @@ services:
     networks:
       t2web-isp:
         ipv4_address: 10.20.30.11
+
+  ntp:
+    image: cturra/ntp:latest
+    container_name: t2isp-ntp
+    restart: always
+    ports:
+      - 123:123/udp
+    environment:
+      - NTP_SERVERS=time.cloudflare.com
+      - LOG_LEVEL=0
+      - TZ=America/Sao_Paulo
+    networks:
+      t2web-isp:
+        ipv4_address: 10.20.30.12
+
+  tacacs:
+    image: lfkeitel/tacacs_plus:latest
+    container_name: t2isp-tacacs
+    restart: always
+    ports:
+      - 49:4949
+    volumes:
+      - /opt/docker/data/tacacs/:/etc/tac_plus/tac_plus.cfg
+    networks:
+      t2web-isp:
+        ipv4_address: 10.20.30.13
+
+  t2isp-krill:
+    image: nlnetlabs/krill
+    container_name: t2isp-krill
+    environment:
+      - KRILL_LOG_LEVEL=debug
+      - KRILL_FQDN=rpki-test.t2web.com.br
+      - KRILL_AUTH_TOKEN=rpki@T2#8183
+      - TZ=America/Sao_Paulo
+    restart: always
+    networks:
+      t2web-isp:
+        ipv4_address: 10.20.30.14
+
+  t2isp-routinator:
+    image: nlnetlabs/routinator
+    container_name: t2isp-routinator
+    restart: unless-stopped
+    networks:
+      t2web-isp:
+        ipv4_address: 10.20.30.15
 
 networks:
   t2web-isp:
