@@ -1,9 +1,9 @@
 version: '3'
 services:
 
-  t2mysql:
+  t2isp-mysql:
     container_name: t2isp-mysql
-    image: 'mysql:8'
+    image: 'mysql:8.0'
     restart: unless-stopped
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -18,7 +18,7 @@ services:
         ipv4_address: 10.20.30.2
 
 
-  t2zbxserver:
+  t2isp-zbxserver:
     container_name: t2isp-zbxserver
     image: 'zabbix/zabbix-server-mysql:ubuntu-6.0-latest'
     restart: unless-stopped
@@ -43,16 +43,16 @@ services:
       ZBX_TRAPPERIMEOUT: 300
       ZBX_ENABLE_SNMP_TRAPS: true
     depends_on:
-      - t2mysql
+      - t2isp-mysql
     volumes:
-      - /opt/docker/data/zabbix/server/alertscripts:/usr/lib/zabbix/alertscripts 
-      - /opt/docker/data/zabbix/server/externalscripts:/usr/lib/zabbix/externalscripts 
+      - /opt/docker/data/zabbix/server/alertscripts:/usr/lib/zabbix/alertscripts
+      - /opt/docker/data/zabbix/server/externalscripts:/usr/lib/zabbix/externalscripts
     networks:
       t2web-isp:
         ipv4_address: 10.20.30.3
 
 
-  t2zbxfront:
+  t2isp-zbxfront:
     container_name: t2isp-zbxfront
     image: 'zabbix/zabbix-web-apache-mysql:ubuntu-6.0-latest'
     restart: unless-stopped
@@ -68,13 +68,13 @@ services:
       VIRTUAL_HOST: "zbxisp.t2web.com.br"
       ZBX_SERVER_HOST: "10.20.30.3"
     depends_on:
-      - t2mysql
+      - t2isp-mysql
     networks:
       t2web-isp:
         ipv4_address: 10.20.30.4
 
 
-  t2grafana:
+  t2isp-grafana:
     container_name: t2isp-grafana
     image: 'grafana/grafana:10.0.0-ubuntu'
     restart: unless-stopped
@@ -88,7 +88,7 @@ services:
         ipv4_address: 10.20.30.5
 
 
-  t2dns:
+  t2isp-dns:
     container_name: t2isp-bind9
     image: 'labbsr0x/dns-bind9'
     restart: unless-stopped
@@ -104,8 +104,8 @@ services:
         ipv4_address: 10.20.30.6
 
 
-  t2proxymanager:
-    container_name: t2isp-proxymanager
+  t2isp-npm:
+    container_name: t2isp-npm
     image: 'jc21/nginx-proxy-manager:latest'
     restart: unless-stopped
     environment:
@@ -136,53 +136,7 @@ services:
       t2web-isp:
         ipv4_address: 10.20.30.8
 
-  loki-logs:
-    container_name: t2isp-lokilogs
-    image: grafana/loki:2.9.0
-    command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      t2web-isp:
-        ipv4_address: 10.20.30.9
-
-  promtail:
-    container_name: t2isp-promtail
-    image: grafana/promtail:2.9.0
-    volumes:
-      - /var/log:/var/log
-      - /opt/docker/data/promtail/config:/mnt/config
-    command: -config.file=/etc/promtail/config.yml
-    networks:
-      t2web-isp:
-        ipv4_address: 10.20.30.10
-
-  cronicle:
-    image: soulteary/cronicle:0.9.39
-    restart: always
-    hostname: cronicle
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /opt/docker/data/cronicle/data/data:/opt/cronicle/data
-      - /opt/docker/data/cronicle/data/logs:/opt/cronicle/logs
-      - /opt/docker/data/cronicle/data/plugins:/opt/cronicle/plugins
-    extra_hosts:
-      - "cronicle.lab.io:0.0.0.0"
-    environment:
-      - TZ=America/Sao_Paulo
-    healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:3012/api/app/ping || exit 1"]
-      interval: 5s
-      timeout: 1s
-      retries: 3
-    logging:
-        driver: "json-file"
-        options:
-            max-size: "10m"
-    networks:
-      t2web-isp:
-        ipv4_address: 10.20.30.11
-
-  ntp:
+  t2isp-ntp:
     image: cturra/ntp:latest
     container_name: t2isp-ntp
     restart: always
@@ -194,9 +148,9 @@ services:
       - TZ=America/Sao_Paulo
     networks:
       t2web-isp:
-        ipv4_address: 10.20.30.12
+        ipv4_address: 10.20.30.9
 
-  tacacs:
+  t2isp-tacacs:
     image: lfkeitel/tacacs_plus:latest
     container_name: t2isp-tacacs
     restart: always
@@ -206,20 +160,22 @@ services:
       - /opt/docker/data/tacacs/:/etc/tac_plus/
     networks:
       t2web-isp:
-        ipv4_address: 10.20.30.13
+        ipv4_address: 10.20.30.10
 
   t2isp-krill:
     image: nlnetlabs/krill
     container_name: t2isp-krill
     environment:
       - KRILL_LOG_LEVEL=debug
-      - KRILL_FQDN=rpki-test.t2web.com.br
+      - KRILL_FQDN=rpki-jnet-rpki.t2web.com.br
       - KRILL_AUTH_TOKEN=rpki@T2#8183
       - TZ=America/Sao_Paulo
+    volumes:
+     - /opt/docker/data/krill:/var/krill/data/
     restart: always
     networks:
       t2web-isp:
-        ipv4_address: 10.20.30.14
+        ipv4_address: 10.20.30.11
 
   t2isp-routinator:
     image: nlnetlabs/routinator
@@ -227,7 +183,7 @@ services:
     restart: unless-stopped
     networks:
       t2web-isp:
-        ipv4_address: 10.20.30.15
+        ipv4_address: 10.20.30.12
 
 networks:
   t2web-isp:
